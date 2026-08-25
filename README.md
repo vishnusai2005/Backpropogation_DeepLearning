@@ -176,6 +176,4 @@ If you're a recruiter or hiring manager reviewing this — I'm actively seeking 
 
 ---
 
-## 📜 License
 
-This project is open-sourced under the MIT License — feel free to learn from it, fork it, and build on it.
