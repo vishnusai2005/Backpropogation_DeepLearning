@@ -1,4 +1,4 @@
-# 🧠  Neural Network from Scratch — Forward & Backpropagation in Pure NumPy..
+# 🧠  Neural Network from Scratch — Forward & Backpropagation in Pure NumPy.
 
 **No TensorFlow. No PyTorch. No `.fit()`.** Just linear algebra, calculus, and NumPy — a full neural network training pipeline built from first principles to prove the math is understood, not just imported.
 
