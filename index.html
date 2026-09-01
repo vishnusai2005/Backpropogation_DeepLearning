@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShipTrack Pro — Full-Stack Shipment Tracking & Delivery Visibility Platform</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Leaflet CSS for Interactive OpenStreetMap -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Background Decorative Glows -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- App Wrapper -->
+  <div class="app-layout">
+    
+    <!-- Top Header Bar -->
+    <header class="top-navbar">
+      <div class="nav-brand">
+        <div class="brand-logo-wrap">
+          <i class="fa-solid fa-cube logo-icon"></i>
+          <span class="pulse-ring"></span>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">
+            <span class="brand-highlight">ShipTrack</span> <span class="brand-pro">PRO</span>
+          </div>
+          <span class="brand-subtitle">Infosys Full-Stack Delivery Visibility Platform</span>
+        </div>
+      </div>
+
+      <!-- Quick Tracking Search Bar -->
+      <div class="header-search-wrap">
+        <div class="search-input-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="headerSearchInput" placeholder="Quick Search Tracking # (e.g. STP-8821-BLR)" autocomplete="off" />
+          <button class="btn-quick-track" id="btnHeaderTrack">
+            <span>Track</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Role Switcher & User Profile (RBAC Module) -->
+      <div class="header-actions">
+        <!-- Role Selector Pill -->
+        <div class="role-selector-pill" title="Switch Role (RBAC Simulation)">
+          <i class="fa-solid fa-user-shield"></i>
+          <span class="role-label">Role:</span>
+          <select id="roleSelector" class="role-select-dropdown">
+            <option value="ADMIN">Administrator (Full Access)</option>
+            <option value="OPERATOR">Logistics Operator</option>
+            <option value="BUSINESS">Business Client</option>
+            <option value="CUSTOMER" selected>Customer</option>
+            <option value="SUPPORT">Support Agent</option>
+          </select>
+        </div>
+
+        <!-- Live Notification Bell -->
+        <div class="notification-bell-wrap" id="notifBellBtn">
+          <button class="icon-btn" title="Live Delivery Alerts">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notif-badge" id="notifBadgeCount">3</span>
+          </button>
+
+          <!-- Notification Dropdown -->
+          <div class="notif-dropdown hidden" id="notifDropdown">
+            <div class="notif-dropdown-header">
+              <div class="notif-title"><i class="fa-solid fa-bolt"></i> Live Real-Time Alerts</div>
+              <button class="btn-text-xs" id="btnClearNotifs">Clear All</button>
+            </div>
+            <div class="notif-list" id="notifList">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Toggle Button -->
+        <button class="icon-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+
+        <!-- User Profile Pill -->
+        <div class="user-profile-badge" id="userProfileBtn">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="User Avatar" class="user-avatar" id="currentAvatar" />
+          <div class="user-meta">
+            <span class="user-name" id="currentUserName">Alex Morgan</span>
+            <span class="user-role-tag" id="currentUserRoleTag">Customer</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Navigation Bar (Tabs) -->
+    <nav class="main-tab-nav">
+      <button class="nav-tab active" data-tab="tab-tracking">
+        <i class="fa-solid fa-location-crosshairs"></i>
+        <span>Live Tracking & GPS</span>
+        <span class="tab-pill">Live</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-shipments">
+        <i class="fa-solid fa-boxes-stacked"></i>
+        <span>Shipment Management</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-eta-routes">
+        <i class="fa-solid fa-route"></i>
+        <span>ETA & Route Intelligence</span>
+        <span class="tab-pill ai-pill">AI</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-pod">
+        <i class="fa-solid fa-file-signature"></i>
+        <span>Proof of Delivery (POD)</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-analytics">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Analytics Dashboards</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-reports">
+        <i class="fa-solid fa-file-lines"></i>
+        <span>Reports & Exports</span>
+      </button>
+      <button class="nav-tab special-tab" data-tab="tab-milestones">
+        <i class="fa-solid fa-award"></i>
+        <span>Infosys Milestones & Architecture</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Viewport -->
+    <main class="main-content">
+      
+      <!-- ============================================================ -->
+      <!-- TAB 1: LIVE TRACKING & GPS RADAR                             -->
+      <!-- ============================================================ -->
+      <section id="tab-tracking" class="tab-pane active">
+        <div class="tracking-grid">
+          
+          <!-- Left Control Panel: Shipment Selector & Live Status -->
+          <div class="tracking-sidebar card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-satellite-dish header-icon text-cyan"></i>
+                <div>
+                  <h3 class="card-title">Live Tracking Radar</h3>
+                  <p class="card-desc">Select or input any tracking number</p>
+                </div>
+              </div>
+              <span class="live-pulse-badge"><span class="dot"></span> Online</span>
+            </div>
+
+            <!-- Active Shipment Selector Dropdown -->
+            <div class="form-group mb-3">
+              <label class="form-label" for="activeShipmentSelect"><i class="fa-solid fa-truck-fast mr-1"></i> Choose Active Shipment</label>
+              <select id="activeShipmentSelect" class="form-control select-modern">
+                <!-- Dynamically loaded -->
+              </select>
+            </div>
+
+            <!-- Live Status Hero Card -->
+            <div class="tracking-hero-card" id="trackingHeroCard">
+              <div class="hero-header">
+                <div>
+                  <div class="tracking-id-display" id="displayTrackingId">STP-8821-BLR</div>
+                  <div class="courier-partner" id="displayCarrier">Carrier: <strong>Infosys Express Fleet #402</strong></div>
+                </div>
+                <div class="status-badge" id="displayStatusBadge">In Transit</div>
+              </div>
+
+              <!-- Route Origin -> Destination summary -->
+              <div class="route-summary-box">
+                <div class="route-point">
+                  <span class="point-circle origin"></span>
+                  <div class="point-info">
+                    <span class="point-label">Origin</span>
+                    <span class="point-val" id="displayOrigin">Electronic City, Bengaluru</span>
+                  </div>
+                </div>
+                <div class="route-arrow">
+                  <i class="fa-solid fa-angles-right"></i>
+                  <span class="distance-pill" id="displayDistance">570 km</span>
+                </div>
+                <div class="route-point">
+                  <span class="point-circle dest"></span>
+                  <div class="point-info">
+                    <span class="point-label">Destination</span>
+                    <span class="point-val" id="displayDestination">HITEC City, Hyderabad</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dynamic ETA Hero Metric -->
+              <div class="eta-hero-stat">
+                <div class="stat-item">
+                  <span class="stat-icon"><i class="fa-regular fa-clock"></i></span>
+                  <div>
+                    <span class="stat-lbl">Estimated Delivery</span>
+                    <span class="stat-val text-gradient-primary" id="displayETA">Today, 08:30 PM</span>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></span>
+                  <div>
+                    <span class="stat-lbl">Time Remaining</span>
+                    <span class="stat-val text-cyan" id="displayRemainingTime">2h 45m</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Live Simulator Controls -->
+              <div class="simulator-box">
+                <div class="sim-header">
+                  <span><i class="fa-solid fa-gamepad mr-1"></i> Live GPS Simulator:</span>
+                  <span class="sim-status" id="simStatusText">Ready</span>
+                </div>
+                <div class="sim-controls">
+                  <button class="btn-sim-action btn-play" id="btnSimPlay" title="Start Vehicle Movement Simulation">
+                    <i class="fa-solid fa-play"></i> Run Vehicle
+                  </button>
+                  <button class="btn-sim-action btn-pause" id="btnSimPause" title="Pause Simulation">
+                    <i class="fa-solid fa-pause"></i> Pause
+                  </button>
+                  <button class="btn-sim-action btn-reset" id="btnSimReset" title="Reset Route">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                  </button>
+                </div>
+                <div class="sim-speed-wrap">
+                  <label for="simSpeedSlider">Simulation Speed: <span id="simSpeedVal" class="text-cyan">3x</span></label>
+                  <input type="range" id="simSpeedSlider" min="1" max="10" value="3" class="range-slider" />
+                </div>
+                <!-- Delay injection trigger -->
+                <div class="sim-actions-extra">
+                  <button class="btn-warning-sm" id="btnInjectDelay">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Simulate Traffic Delay (+45m)
+                  </button>
+                  <button class="btn-success-sm" id="btnSimDeliver">
+                    <i class="fa-solid fa-check-double mr-1"></i> Mark Delivered
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Milestone Progress Step Timeline -->
+            <div class="timeline-container">
+              <h4 class="timeline-title"><i class="fa-solid fa-list-check mr-1"></i> Shipment Progress Milestones</h4>
+              <div class="tracking-stepper" id="trackingTimelineStepper">
+                <!-- Dynamically updated -->
+              </div>
+            </div>
+
+            <!-- Package & Telemetry Details Accordion -->
+            <div class="telemetry-card">
+              <h4 class="telemetry-title"><i class="fa-solid fa-microchip mr-1"></i> Vehicle & Package Telemetry</h4>
+              <div class="telemetry-grid">
+                <div class="tele-item">
+                  <span class="tele-label">Driver:</span>
+                  <span class="tele-val" id="teleDriver">Rajesh Kumar (#D-109)</span>
+                </div>
+                <div class="tele-item">
+                  <span class="tele-label">Vehicle:</span>
+                  <span class="tele-val" id="teleVehicle">Tata Ultra EV (KA-01-EQ-9812)</span>
+                </div>
+                <div class="tele-item">
+                  <span class="tele-label">Current Speed:</span>
+                  <span class="tele-val text-cyan" id="teleSpeed">64 km/h</span>
+                </div>
+                <div class="tele-item">
+                  <span class="tele-label">Cargo Temp:</span>
+                  <span class="tele-val text-success" id="teleTemp">22.4°C (Normal)</span>
+                </div>
+                <div class="tele-item">
+                  <span class="tele-label">Package Weight:</span>
+                  <span class="tele-val" id="teleWeight">3.8 kg</span>
+                </div>
+                <div class="tele-item">
+                  <span class="tele-label">Security Seal:</span>
+                  <span class="tele-val text-success" id="teleSecurity"><i class="fa-solid fa-shield-check"></i> Intact</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Map & Live Visualizer Viewport -->
+          <div class="tracking-map-panel card">
+            <div class="map-toolbar">
+              <div class="map-title-wrap">
+                <i class="fa-solid fa-map-location-dot text-cyan"></i>
+                <span class="map-heading">Interactive GPS OpenStreetMap Tracking</span>
+                <span class="badge-tech">Leaflet.js + OpenStreetMap Engine</span>
+              </div>
+              <div class="map-actions">
+                <button class="map-tool-btn" id="btnMapRecenter" title="Center on Vehicle">
+                  <i class="fa-solid fa-crosshairs"></i> Recenter
+                </button>
+                <button class="map-tool-btn" id="btnToggleTraffic" title="Toggle Traffic Layer Simulation">
+                  <i class="fa-solid fa-traffic-light"></i> Traffic Heatmap
+                </button>
+                <button class="map-tool-btn" id="btnMapFullscreen" title="Toggle Fullscreen">
+                  <i class="fa-solid fa-expand"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Leaflet Map Container -->
+            <div id="liveTrackingMap" class="leaflet-map-canvas"></div>
+
+            <!-- Map Overlay Floating Status HUD -->
+            <div class="map-hud-overlay">
+              <div class="hud-stat">
+                <span class="hud-label">GPS COORDINATES</span>
+                <span class="hud-value" id="hudGps">13.8291° N, 77.5892° E</span>
+              </div>
+              <div class="hud-stat">
+                <span class="hud-label">NEXT HUB CHECKPOINT</span>
+                <span class="hud-value" id="hudNextHub">Anantapur Transit Sorting Hub</span>
+              </div>
+              <div class="hud-stat">
+                <span class="hud-label">WEATHER ON ROUTE</span>
+                <span class="hud-value" id="hudWeather"><i class="fa-solid fa-cloud-sun mr-1"></i> 29°C Clear Skies</span>
+              </div>
+              <div class="hud-stat">
+                <span class="hud-label">SLA ON-TIME PROBABILITY</span>
+                <span class="hud-value text-success" id="hudSLA">98.4%</span>
+              </div>
+            </div>
+
+            <!-- Recent Tracking Events Log Feed -->
+            <div class="map-log-feed">
+              <div class="log-feed-header">
+                <i class="fa-solid fa-timeline mr-1"></i> Live Sensor & Checkpoint Event Stream
+              </div>
+              <div class="log-items" id="liveSensorLog">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TAB 2: SHIPMENT MANAGEMENT (CREATE & MANAGE)                 -->
+      <!-- ============================================================ -->
+      <section id="tab-shipments" class="tab-pane">
+        <div class="shipment-mgmt-layout">
+          
+          <!-- Create Shipment Form Card (INPUTS) -->
+          <div class="card shipment-create-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-circle-plus header-icon text-indigo"></i>
+                <div>
+                  <h3 class="card-title">Create New Shipment</h3>
+                  <p class="card-desc">Module 3: Ingest, configure, and dispatch cargo package</p>
+                </div>
+              </div>
+              <button class="btn-secondary-sm" id="btnFillSampleShipment">
+                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Auto-Fill Sample Data
+              </button>
+            </div>
+
+            <form id="createShipmentForm" class="form-grid">
+              
+              <!-- Sender Details -->
+              <div class="form-section-title">
+                <i class="fa-solid fa-user-tag text-cyan"></i> 1. Sender Information
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="shipSenderName">Sender Full Name / Company *</label>
+                <input type="text" id="shipSenderName" class="form-control" placeholder="e.g. Infosys Campus Logistics" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="shipSenderPhone">Sender Phone / Contact *</label>
+                <input type="tel" id="shipSenderPhone" class="form-control" placeholder="+91 98765 43210" required />
+              </div>
+              <div class="form-group col-span-2">
+                <label class="form-label" for="shipSenderAddress">Origin Pickup Address & Hub *</label>
+                <input type="text" id="shipSenderAddress" class="form-control" placeholder="Plot 44, Electronic City Phase 1, Bengaluru, Karnataka 560100" required />
+              </div>
+
+              <!-- Receiver Details -->
+              <div class="form-section-title col-span-2">
+                <i class="fa-solid fa-location-dot text-indigo"></i> 2. Recipient & Delivery Address
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="shipReceiverName">Recipient Name *</label>
+                <input type="text" id="shipReceiverName" class="form-control" placeholder="e.g. Dr. Ramesh Varma" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="shipReceiverPhone">Recipient Phone (SMS Alerts) *</label>
+                <input type="tel" id="shipReceiverPhone" class="form-control" placeholder="+91 91234 56789" required />
+              </div>
+              <div class="form-group col-span-2">
+                <label class="form-label" for="shipReceiverAddress">Destination Delivery Address *</label>
+                <input type="text" id="shipReceiverAddress" class="form-control" placeholder="Tower B, HITEC City, Gachibowli, Hyderabad, Telangana 500081" required />
+              </div>
+
+              <!-- Package & Cargo Details -->
+              <div class="form-section-title col-span-2">
+                <i class="fa-solid fa-box-open text-warning"></i> 3. Package Specifications & Service Level
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="shipPackageType">Package Category</label>
+                <select id="shipPackageType" class="form-control select-modern">
+                  <option value="Electronics & IT Equipment">Electronics & IT Hardware</option>
+                  <option value="Corporate Documents">Confidential Documents</option>
+                  <option value="Industrial Spares">Industrial Precision Spares</option>
+                  <option value="Pharmaceutical Cold Chain">Pharmaceutical Cold Chain</option>
+                  <option value="Retail & Apparel">Retail & Consumer Goods</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="shipWeight">Weight (kg) *</label>
+                <input type="number" id="shipWeight" class="form-control" step="0.1" min="0.1" placeholder="4.5" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="shipPriority">Service Priority Level</label>
+                <select id="shipPriority" class="form-control select-modern">
+                  <option value="Express Overnight (24h)">Express Overnight (SLA 24h)</option>
+                  <option value="Same Day Air Dispatch">Same Day Air Cargo</option>
+                  <option value="Standard Surface (3 Days)">Standard Surface Logistics (3 Days)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="shipDeclaredValue">Declared Value (INR ₹)</label>
+                <input type="number" id="shipDeclaredValue" class="form-control" placeholder="25000" />
+              </div>
+              
+              <!-- Route Selection -->
+              <div class="form-group col-span-2">
+                <label class="form-label" for="shipRoutePreset">Select Geographic Corridor / Route</label>
+                <select id="shipRoutePreset" class="form-control select-modern">
+                  <option value="BLR-HYD">Bengaluru (BLR) ➔ Hyderabad (HYD) [570 km]</option>
+                  <option value="MUM-PUN">Mumbai (BOM) ➔ Pune (PNQ) [150 km]</option>
+                  <option value="DEL-JAI">New Delhi (DEL) ➔ Jaipur (JAI) [280 km]</option>
+                  <option value="CHN-KOC">Chennai (MAA) ➔ Kochi (COK) [685 km]</option>
+                </select>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="form-actions col-span-2">
+                <button type="reset" class="btn-secondary">
+                  <i class="fa-solid fa-rotate-left mr-1"></i> Reset Form
+                </button>
+                <button type="submit" class="btn-primary">
+                  <i class="fa-solid fa-paper-plane mr-1"></i> Register & Dispatch Shipment
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Generated Shipment Output & Details Card (OUTPUTS) -->
+          <div class="card shipment-summary-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-barcode header-icon text-success"></i>
+                <div>
+                  <h3 class="card-title">Shipment Manifest & Barcode Output</h3>
+                  <p class="card-desc">Real-time generated tracking token and label</p>
+                </div>
+              </div>
+              <button class="btn-secondary-sm" id="btnPrintLabel">
+                <i class="fa-solid fa-print mr-1"></i> Print Label
+              </button>
+            </div>
+
+            <div class="manifest-output-body" id="manifestOutputBody">
+              <!-- Digital Barcode & QR Display -->
+              <div class="barcode-container">
+                <div class="barcode-visual">
+                  <div class="barcode-stripes"></div>
+                  <div class="barcode-code" id="manifestBarcodeText">STP-8821-BLR</div>
+                </div>
+                <div class="qr-mock">
+                  <i class="fa-solid fa-qrcode qr-icon"></i>
+                  <span class="qr-sub">Scan for Mobile Tracking</span>
+                </div>
+              </div>
+
+              <!-- Output Key-Value Specifications -->
+              <div class="manifest-spec-table">
+                <div class="spec-row">
+                  <span class="spec-key">Tracking Waybill:</span>
+                  <span class="spec-val font-mono text-cyan" id="outTrackingNumber">STP-8821-BLR</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">Current Lifecycle:</span>
+                  <span class="spec-val"><span class="status-pill status-in-transit" id="outStatus">In Transit</span></span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">Dispatch Timestamp:</span>
+                  <span class="spec-val" id="outCreatedAt">2026-08-30 09:15 AM</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">Consignor (Sender):</span>
+                  <span class="spec-val" id="outSender">Infosys Campus Logistics, Bengaluru</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">Consignee (Receiver):</span>
+                  <span class="spec-val" id="outReceiver">Dr. Ramesh Varma, Hyderabad</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">Package Specs:</span>
+                  <span class="spec-val" id="outSpecs">3.8 kg • Electronics & Hardware</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">Estimated Transit SLA:</span>
+                  <span class="spec-val text-success" id="outSla">Express (24 Hours)</span>
+                </div>
+              </div>
+
+              <!-- Lifecycle Management Quick Actions -->
+              <div class="lifecycle-actions-box">
+                <span class="action-title"><i class="fa-solid fa-sliders mr-1"></i> Fast Lifecycle Status Overrides:</span>
+                <div class="action-btn-group">
+                  <button class="status-btn" data-set-status="Picked Up">Picked Up</button>
+                  <button class="status-btn" data-set-status="In Transit">In Transit</button>
+                  <button class="status-btn" data-set-status="Out for Delivery">Out for Delivery</button>
+                  <button class="status-btn" data-set-status="Delivered">Delivered</button>
+                  <button class="status-btn danger" data-set-status="Failed Delivery">Failed</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- All Shipments Directory Table -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <div class="card-header-left">
+              <i class="fa-solid fa-table-list header-icon text-cyan"></i>
+              <div>
+                <h3 class="card-title">All Shipments Database & Records</h3>
+                <p class="card-desc">Manage, search, filter, and monitor all active consignments</p>
+              </div>
+            </div>
+            <div class="table-filters">
+              <input type="text" id="tableSearchInput" class="form-control-sm" placeholder="Search by ID, name, city..." />
+              <select id="tableStatusFilter" class="form-control-sm select-modern">
+                <option value="ALL">All Statuses</option>
+                <option value="Created">Created</option>
+                <option value="Picked Up">Picked Up</option>
+                <option value="In Transit">In Transit</option>
+                <option value="Out for Delivery">Out for Delivery</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Failed Delivery">Failed Delivery</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="modern-table" id="shipmentsTable">
+              <thead>
+                <tr>
+                  <th>Tracking Number</th>
+                  <th>Origin & Destination</th>
+                  <th>Recipient</th>
+                  <th>Weight / Category</th>
+                  <th>Status</th>
+                  <th>Dynamic ETA</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="shipmentsTableBody">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TAB 3: ETA PREDICTION & ROUTE INTELLIGENCE                   -->
+      <!-- ============================================================ -->
+      <section id="tab-eta-routes" class="tab-pane">
+        <div class="grid-2-col">
+          
+          <!-- AI ETA Predictor Engine (Module 6) -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-brain header-icon text-indigo"></i>
+                <div>
+                  <h3 class="card-title">AI Dynamic ETA Prediction Engine</h3>
+                  <p class="card-desc">Machine learning delivery forecasting & delay risk analysis</p>
+                </div>
+              </div>
+              <span class="badge-tech">Predictive ML Model</span>
+            </div>
+
+            <div class="eta-calculator-box">
+              <div class="form-grid-3">
+                <div class="form-group">
+                  <label class="form-label" for="calcDistance">Remaining Distance (km)</label>
+                  <input type="number" id="calcDistance" class="form-control" value="185" min="5" max="2000" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="calcSpeed">Average Speed (km/h)</label>
+                  <input type="number" id="calcSpeed" class="form-control" value="62" min="10" max="120" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="calcTraffic">Traffic Congestion Index</label>
+                  <select id="calcTraffic" class="form-control select-modern">
+                    <option value="1.0">Low (Highway Clear) [1.0x]</option>
+                    <option value="1.3" selected>Moderate (Normal Traffic) [1.3x]</option>
+                    <option value="1.8">Heavy (Congestion / Bottleneck) [1.8x]</option>
+                    <option value="2.5">Severe (Gridlock / Diversion) [2.5x]</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="calcWeather">Weather Severity Factor</label>
+                  <select id="calcWeather" class="form-control select-modern">
+                    <option value="0">Clear Skies (+0 min)</option>
+                    <option value="25" selected>Light Monsoon Rain (+25 min)</option>
+                    <option value="60">Heavy Downpour / Low Visibility (+60 min)</option>
+                    <option value="120">Severe Storm / Flooding (+120 min)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="calcStops">Intermediate Hub Checkpoints</label>
+                  <input type="number" id="calcStops" class="form-control" value="2" min="0" max="10" />
+                </div>
+                <div class="form-group flex-end">
+                  <button class="btn-primary w-100" id="btnCalculateETA">
+                    <i class="fa-solid fa-calculator mr-1"></i> Re-Calculate ETA
+                  </button>
+                </div>
+              </div>
+
+              <!-- Output Prediction Card -->
+              <div class="eta-prediction-result-card" id="etaResultCard">
+                <div class="result-top">
+                  <div class="eta-large-time">
+                    <span class="lbl">Predicted Arrival Window</span>
+                    <span class="val text-gradient-primary" id="calcResultETA">Today at 08:45 PM (±15 min)</span>
+                  </div>
+                  <div class="delay-risk-pill low" id="calcRiskPill">
+                    <i class="fa-solid fa-shield-check mr-1"></i> Low Delay Risk (SLA Safe)
+                  </div>
+                </div>
+
+                <div class="calc-breakdown-grid">
+                  <div class="calc-breakdown-item">
+                    <span class="title">Pure Transit Duration</span>
+                    <span class="num" id="calcBaseTime">2h 59m</span>
+                  </div>
+                  <div class="calc-breakdown-item">
+                    <span class="title">Traffic Delay Buffer</span>
+                    <span class="num text-warning" id="calcTrafficDelay">+53m</span>
+                  </div>
+                  <div class="calc-breakdown-item">
+                    <span class="title">Weather Impact</span>
+                    <span class="num text-warning" id="calcWeatherDelay">+25m</span>
+                  </div>
+                  <div class="calc-breakdown-item">
+                    <span class="title">Hub Sorting Dwell</span>
+                    <span class="num text-cyan" id="calcHubDelay">+30m</span>
+                  </div>
+                  <div class="calc-breakdown-item total">
+                    <span class="title">Total Estimated Transit</span>
+                    <span class="num text-gradient-primary" id="calcTotalTime">4h 47m</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Route Optimization & Green Logistics (Module 7) -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-leaf header-icon text-success"></i>
+                <div>
+                  <h3 class="card-title">Route Optimization & Green Corridors</h3>
+                  <p class="card-desc">Module 7: Distance calculation, fuel & carbon emission savings</p>
+                </div>
+              </div>
+              <span class="badge-tech">Dynamic Dijkstra & TSP</span>
+            </div>
+
+            <div class="route-comparison-wrap">
+              <div class="route-card unoptimized">
+                <div class="route-header">
+                  <span class="route-type-badge standard">Standard Highway Route</span>
+                  <span class="distance-text">570 km</span>
+                </div>
+                <div class="route-stats">
+                  <div class="rstat"><span>Estimated Duration:</span> <strong>10h 15m</strong></div>
+                  <div class="rstat"><span>Fuel Burn (Diesel):</span> <strong>142.5 Liters</strong></div>
+                  <div class="rstat"><span>Carbon Footprint:</span> <strong>381.9 kg CO₂</strong></div>
+                  <div class="rstat"><span>Toll Charges:</span> <strong>₹ 840</strong></div>
+                </div>
+              </div>
+
+              <div class="route-card optimized highlight-card">
+                <div class="route-header">
+                  <span class="route-type-badge green"><i class="fa-solid fa-bolt mr-1"></i> AI Optimized Green Corridor</span>
+                  <span class="distance-text text-success">528 km (-42 km)</span>
+                </div>
+                <div class="route-stats">
+                  <div class="rstat"><span>Optimized Duration:</span> <strong class="text-success">8h 40m (-1h 35m)</strong></div>
+                  <div class="rstat"><span>EV / Hybrid Energy:</span> <strong class="text-success">118 kWh</strong></div>
+                  <div class="rstat"><span>Carbon Footprint:</span> <strong class="text-success">82.4 kg CO₂ (-78%)</strong></div>
+                  <div class="rstat"><span>Smart Toll Corridor:</span> <strong class="text-success">₹ 620 (-26%)</strong></div>
+                </div>
+                <button class="btn-success w-100 mt-3" id="btnApplyOptimizedRoute">
+                  <i class="fa-solid fa-check mr-1"></i> Assign Vehicle to Green Optimized Corridor
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TAB 4: PROOF OF DELIVERY (POD) MODULE                        -->
+      <!-- ============================================================ -->
+      <section id="tab-pod" class="tab-pane">
+        <div class="grid-2-col">
+          
+          <!-- POD Submission Form & Digital Signature Pad -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-signature header-icon text-cyan"></i>
+                <div>
+                  <h3 class="card-title">Digital Proof of Delivery (POD)</h3>
+                  <p class="card-desc">Module 8: Capture signature, photo evidence, and OTP verification</p>
+                </div>
+              </div>
+              <span class="badge-tech">Secure Verification</span>
+            </div>
+
+            <form id="podForm" class="pod-form-layout">
+              <div class="form-group">
+                <label class="form-label" for="podShipmentSelect">Select Shipment to Deliver *</label>
+                <select id="podShipmentSelect" class="form-control select-modern" required>
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="podRecipientName">Recipient Collected By *</label>
+                  <input type="text" id="podRecipientName" class="form-control" placeholder="Recipient / Authorized Representative" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="podOtpCode">Delivery Verification OTP / PIN *</label>
+                  <div class="input-with-action">
+                    <input type="text" id="podOtpCode" class="form-control font-mono" placeholder="e.g. 7842" maxlength="6" required />
+                    <button type="button" class="btn-secondary-sm" id="btnSendOtp">Send OTP</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Photo Evidence Upload Simulator -->
+              <div class="form-group">
+                <label class="form-label"><i class="fa-solid fa-camera mr-1"></i> Delivery Photo Evidence (Doorstep / Parcel Scan)</label>
+                <div class="photo-upload-zone" id="photoUploadZone">
+                  <input type="file" id="podPhotoInput" accept="image/*" class="file-input-hidden" />
+                  <div class="upload-prompt" id="uploadPrompt">
+                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                    <p class="upload-text">Click or drag & drop delivery photo, or <button type="button" class="link-btn" id="btnUseSamplePhoto">Use Default Delivery Proof Photo</button></p>
+                  </div>
+                  <div class="photo-preview-wrap hidden" id="photoPreviewWrap">
+                    <img src="" id="photoPreviewImg" alt="Delivery Photo Proof" class="photo-preview-thumb" />
+                    <button type="button" class="btn-remove-photo" id="btnRemovePhoto"><i class="fa-solid fa-xmark"></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Interactive Signature Canvas -->
+              <div class="form-group">
+                <div class="sig-header-row">
+                  <label class="form-label"><i class="fa-solid fa-pen-nib mr-1"></i> Recipient Digital Signature * (Draw inside box)</label>
+                  <button type="button" class="btn-text-xs" id="btnClearSignature">
+                    <i class="fa-solid fa-eraser mr-1"></i> Clear Canvas
+                  </button>
+                </div>
+                <div class="canvas-wrapper">
+                  <canvas id="signatureCanvas" width="480" height="150"></canvas>
+                  <div class="sig-placeholder" id="sigPlaceholder">Sign here with mouse or touch...</div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn-success w-100" id="btnSubmitPOD">
+                  <i class="fa-solid fa-circle-check mr-1"></i> Complete Delivery & Issue POD Certificate
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Generated Verifiable POD Certificate Output -->
+          <div class="card pod-certificate-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-certificate header-icon text-warning"></i>
+                <div>
+                  <h3 class="card-title">Verifiable POD Certificate</h3>
+                  <p class="card-desc">Cryptographically signed delivery receipt</p>
+                </div>
+              </div>
+              <button class="btn-primary-sm" id="btnDownloadPOD">
+                <i class="fa-solid fa-download mr-1"></i> Download PDF
+              </button>
+            </div>
+
+            <div class="pod-cert-body" id="podCertBody">
+              <div class="cert-watermark">DELIVERED</div>
+              
+              <div class="cert-header">
+                <div class="cert-brand">
+                  <i class="fa-solid fa-cube text-cyan"></i>
+                  <strong>ShipTrack Pro</strong>
+                </div>
+                <div class="cert-badge-valid">
+                  <i class="fa-solid fa-shield-check"></i> VERIFIED DELIVERY
+                </div>
+              </div>
+
+              <div class="cert-content-grid">
+                <div class="cert-row">
+                  <span class="lbl">Waybill Number:</span>
+                  <span class="val font-mono text-cyan" id="certTracking">STP-8821-BLR</span>
+                </div>
+                <div class="cert-row">
+                  <span class="lbl">Recipient Signed:</span>
+                  <span class="val" id="certRecipient">Dr. Ramesh Varma</span>
+                </div>
+                <div class="cert-row">
+                  <span class="lbl">Timestamp of Delivery:</span>
+                  <span class="val" id="certTimestamp">2026-08-30 08:32 PM IST</span>
+                </div>
+                <div class="cert-row">
+                  <span class="lbl">Delivery Location:</span>
+                  <span class="val" id="certLocation">HITEC City, Hyderabad, 500081</span>
+                </div>
+                <div class="cert-row">
+                  <span class="lbl">Delivering Driver:</span>
+                  <span class="val" id="certDriver">Rajesh Kumar (#D-109)</span>
+                </div>
+              </div>
+
+              <div class="cert-evidence-split">
+                <div class="evidence-box">
+                  <span class="evidence-lbl">Digital Signature Captured</span>
+                  <div class="sig-rendered-box" id="certSigBox">
+                    <img src="" id="certSigImg" alt="Digital Signature" class="cert-signature-img" />
+                    <span class="sig-mock-note" id="certSigFallback">Awaiting signature capture</span>
+                  </div>
+                </div>
+                <div class="evidence-box">
+                  <span class="evidence-lbl">Geotagged Photo Evidence</span>
+                  <div class="photo-rendered-box" id="certPhotoBox">
+                    <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=300&auto=format&fit=crop&q=80" id="certPhotoImg" alt="Delivery Photo" class="cert-evidence-img" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="cert-footer">
+                <span class="cert-hash">SHA-256 HASH: a9f8e4b27c10d3e58921a4f09238bc44983e2</span>
+                <span class="cert-seal"><i class="fa-solid fa-lock text-success"></i> Tamper-Proof Record</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TAB 5: ANALYTICS DASHBOARDS (CUSTOMER / BUSINESS / ADMIN)    -->
+      <!-- ============================================================ -->
+      <section id="tab-analytics" class="tab-pane">
+        
+        <!-- Dashboard Sub-Navigation (Switch Views) -->
+        <div class="analytics-subnav">
+          <div class="subnav-left">
+            <span class="subnav-title"><i class="fa-solid fa-chart-line mr-1"></i> Select Role Dashboard View:</span>
+            <div class="subnav-btn-group">
+              <button class="subnav-btn active" data-view="view-admin">Admin Operations View</button>
+              <button class="subnav-btn" data-view="view-business">Business Client View</button>
+              <button class="subnav-btn" data-view="view-customer">Customer Portal View</button>
+            </div>
+          </div>
+          <div class="subnav-right">
+            <span class="date-range-badge"><i class="fa-regular fa-calendar"></i> Last 30 Days (Real-time Live)</span>
+          </div>
+        </div>
+
+        <!-- KPI Summary Metric Cards -->
+        <div class="metrics-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-cyan-subtle">
+              <i class="fa-solid fa-boxes-packing text-cyan"></i>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Total Shipments</span>
+              <span class="kpi-value" id="kpiTotal">1,482</span>
+              <span class="kpi-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> +14.8% this month</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-green-subtle">
+              <i class="fa-solid fa-circle-check text-success"></i>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">On-Time Delivery SLA</span>
+              <span class="kpi-value text-success" id="kpiSLA">98.4%</span>
+              <span class="kpi-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> +2.1% SLA gain</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-indigo-subtle">
+              <i class="fa-solid fa-truck-moving text-indigo"></i>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Active Fleet In-Transit</span>
+              <span class="kpi-value text-indigo" id="kpiActive">48</span>
+              <span class="kpi-trend neutral"><i class="fa-solid fa-arrows-spin"></i> 100% telemetry synced</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-warning-subtle">
+              <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Delay Risk Incidents</span>
+              <span class="kpi-value text-warning" id="kpiDelays">3</span>
+              <span class="kpi-trend negative"><i class="fa-solid fa-arrow-trend-down"></i> -65% due to AI routes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Charts Grid (Chart.js) -->
+        <div class="charts-grid">
+          
+          <!-- Chart 1: Delivery SLA & Status Breakdown -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-chart-pie text-cyan"></i>
+                <h4 class="card-title-sm">Shipment Status Distribution</h4>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chartStatusBreakdown"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Weekly Delivery Volume & On-Time Performance -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-chart-column text-indigo"></i>
+                <h4 class="card-title-sm">Weekly Dispatch Volume vs On-Time Deliveries</h4>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chartVolumeTrends"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 3: Root Cause of Logistics Delays -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-chart-donut text-warning"></i>
+                <h4 class="card-title-sm">Delay Analysis & Root Causes (Module 6)</h4>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chartDelayCauses"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 4: Regional Hub Throughput -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-network-wired text-success"></i>
+                <h4 class="card-title-sm">Major Transit Hub Volume (Bengaluru, Hyd, Mum, Del)</h4>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chartHubThroughput"></canvas>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TAB 6: REPORTS & EXPORT ENGINE (MODULE 11)                   -->
+      <!-- ============================================================ -->
+      <section id="tab-reports" class="tab-pane">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <i class="fa-solid fa-file-export header-icon text-indigo"></i>
+              <div>
+                <h3 class="card-title">Reports & Export Data Engine</h3>
+                <p class="card-desc">Module 11: Export delivery reports, SLA analysis, and operational manifests</p>
+              </div>
+            </div>
+            <div class="export-btn-group">
+              <button class="btn-primary" id="btnExportCSV">
+                <i class="fa-solid fa-file-csv mr-1"></i> Export to CSV / Excel
+              </button>
+              <button class="btn-secondary" id="btnExportPDF">
+                <i class="fa-solid fa-file-pdf mr-1"></i> Print / Save PDF Report
+              </button>
+            </div>
+          </div>
+
+          <!-- Report Filter Controls -->
+          <div class="report-filters-bar">
+            <div class="filter-item">
+              <label class="lbl">Report Type:</label>
+              <select id="reportTypeSelect" class="form-control-sm select-modern">
+                <option value="ALL">Full Operational Shipment Manifest</option>
+                <option value="SLA">On-Time Delivery SLA Audit</option>
+                <option value="DELAYS">Delay & Route Exception Log</option>
+                <option value="POD">Verified Proof of Delivery (POD) Records</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label class="lbl">Date Range:</label>
+              <select id="reportDateSelect" class="form-control-sm select-modern">
+                <option value="TODAY">Today (Real-time)</option>
+                <option value="WEEK" selected>Current Week</option>
+                <option value="MONTH">Current Month</option>
+                <option value="ALL">All Time History</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label class="lbl">Origin Hub:</label>
+              <select id="reportHubSelect" class="form-control-sm select-modern">
+                <option value="ALL">All Hubs (India & Global)</option>
+                <option value="BLR">Bengaluru (BLR Hub)</option>
+                <option value="HYD">Hyderabad (HYD Hub)</option>
+                <option value="BOM">Mumbai (BOM Hub)</option>
+                <option value="DEL">Delhi (DEL Hub)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Printable Report Table Preview -->
+          <div class="report-preview-box" id="printableReportArea">
+            <div class="report-print-header">
+              <div class="rph-left">
+                <h2>ShipTrack Pro — Logistics Performance & Manifest Report</h2>
+                <p>Generated for: <strong>Infosys Delivery Operations Review</strong> • Date: <span id="reportGenDate">2026-08-30</span></p>
+              </div>
+              <div class="rph-right">
+                <span class="report-confidential-tag">CONFIDENTIAL REPORT</span>
+              </div>
+            </div>
+
+            <table class="report-table" id="reportPreviewTable">
+              <thead>
+                <tr>
+                  <th>Waybill ID</th>
+                  <th>Origin</th>
+                  <th>Destination</th>
+                  <th>Recipient</th>
+                  <th>Weight</th>
+                  <th>Dispatch Time</th>
+                  <th>Status</th>
+                  <th>SLA Verdict</th>
+                </tr>
+              </thead>
+              <tbody id="reportTableBody">
+                <!-- Dynamically filled -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TAB 7: INFOSYS MILESTONES & ARCHITECTURE DEMO GUIDE          -->
+      <!-- ============================================================ -->
+      <section id="tab-milestones" class="tab-pane">
+        <div class="milestones-guide-layout">
+          
+          <!-- System Architecture Overview -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <div class="card-header-left">
+                <i class="fa-solid fa-cubes-stacked header-icon text-cyan"></i>
+                <div>
+                  <h3 class="card-title">ShipTrack Pro Architecture & Microservices Blueprint</h3>
+                  <p class="card-desc">Full-Stack React + Spring Boot Microservices Architecture Diagram</p>
+                </div>
+              </div>
+              <span class="badge-tech">Enterprise Production Spec</span>
+            </div>
+
+            <div class="arch-visual-diagram">
+              <div class="arch-layer">
+                <div class="layer-title"><i class="fa-solid fa-desktop mr-1"></i> Client & Presentation Layer</div>
+                <div class="layer-chips">
+                  <span class="chip chip-blue">React.js Web App</span>
+                  <span class="chip chip-blue">Leaflet.js GPS Maps</span>
+                  <span class="chip chip-blue">Chart.js BI Dashboards</span>
+                  <span class="chip chip-blue">HTML5 Canvas Signature POD</span>
+                  <span class="chip chip-blue">Tailwind / Modern CSS</span>
+                </div>
+              </div>
+
+              <div class="arch-connector"><i class="fa-solid fa-arrow-down"></i> RESTful APIs + WebSocket Real-Time Channel</div>
+
+              <div class="arch-layer">
+                <div class="layer-title"><i class="fa-solid fa-shield-halved mr-1"></i> API Gateway & Security Layer (Spring Cloud Gateway)</div>
+                <div class="layer-chips">
+                  <span class="chip chip-purple">JWT Authentication Filter</span>
+                  <span class="chip chip-purple">OAuth2 Google/SSO Provider</span>
+                  <span class="chip chip-purple">Role-Based Access Control (RBAC)</span>
+                  <span class="chip chip-purple">Rate Limiting & CORS</span>
+                </div>
+              </div>
+
+              <div class="arch-connector"><i class="fa-solid fa-arrow-down"></i> Microservices Bus</div>
+
+              <div class="arch-layer microservices">
+                <div class="layer-title"><i class="fa-solid fa-server mr-1"></i> Spring Boot Microservices Backend</div>
+                <div class="layer-chips">
+                  <span class="chip chip-cyan">Auth Service</span>
+                  <span class="chip chip-cyan">User Mgmt Service</span>
+                  <span class="chip chip-cyan">Shipment Mgmt Service</span>
+                  <span class="chip chip-cyan">Live Tracking Service</span>
+                  <span class="chip chip-cyan">ETA Prediction Engine</span>
+                  <span class="chip chip-cyan">Route Optimization Service</span>
+                  <span class="chip chip-cyan">Proof of Delivery Service</span>
+                  <span class="chip chip-cyan">Notification Dispatcher</span>
+                  <span class="chip chip-cyan">Analytics & Reporting</span>
+                </div>
+              </div>
+
+              <div class="arch-connector"><i class="fa-solid fa-arrow-down"></i> Persistence & Message Broker</div>
+
+              <div class="arch-layer">
+                <div class="layer-title"><i class="fa-solid fa-database mr-1"></i> Data Storage & External Integrations</div>
+                <div class="layer-chips">
+                  <span class="chip chip-orange">PostgreSQL Primary DB</span>
+                  <span class="chip chip-orange">Redis In-Memory Cache</span>
+                  <span class="chip chip-orange">AWS S3 / Cloudinary (POD Images)</span>
+                  <span class="chip chip-orange">Twilio SMS & FCM Push</span>
+                  <span class="chip chip-orange">OpenStreetMap / Google Maps API</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 Milestone Breakdown Cards -->
+          <div class="milestones-grid">
+            
+            <!-- Milestone 1 -->
+            <div class="card milestone-card">
+              <div class="milestone-badge m1">Milestone 1 (Week 1 & 2)</div>
+              <h4 class="m-title">Project Setup, Auth & Shipment Core</h4>
+              <ul class="m-list">
+                <li><i class="fa-solid fa-check text-success"></i> JWT Authentication & 5 Role Access Control</li>
+                <li><i class="fa-solid fa-check text-success"></i> Shipment Creation Form with Auto-Tracking ID</li>
+                <li><i class="fa-solid fa-check text-success"></i> Barcode & QR Code Label Generation</li>
+                <li><i class="fa-solid fa-check text-success"></i> Shipment Status Lifecycle Management</li>
+              </ul>
+              <button class="btn-secondary-sm w-100 mt-2" onclick="app.switchTab('tab-shipments')">
+                <i class="fa-solid fa-eye mr-1"></i> Test Milestone 1 Features
+              </button>
+            </div>
+
+            <!-- Milestone 2 -->
+            <div class="card milestone-card">
+              <div class="milestone-badge m2">Milestone 2 (Week 3 & 4)</div>
+              <h4 class="m-title">Live Delivery Monitoring & ETA Prediction</h4>
+              <ul class="m-list">
+                <li><i class="fa-solid fa-check text-success"></i> Leaflet.js Interactive OpenStreetMap GPS Map</li>
+                <li><i class="fa-solid fa-check text-success"></i> Real-time Moving Vehicle Simulator with Speed Control</li>
+                <li><i class="fa-solid fa-check text-success"></i> AI Dynamic ETA Calculation & Delay Factor Engine</li>
+                <li><i class="fa-solid fa-check text-success"></i> Live Telemetry (Speed, Temp, Checkpoints)</li>
+              </ul>
+              <button class="btn-secondary-sm w-100 mt-2" onclick="app.switchTab('tab-tracking')">
+                <i class="fa-solid fa-eye mr-1"></i> Test Milestone 2 Features
+              </button>
+            </div>
+
+            <!-- Milestone 3 -->
+            <div class="card milestone-card">
+              <div class="milestone-badge m3">Milestone 3 (Week 5 & 6)</div>
+              <h4 class="m-title">Proof of Delivery (POD) & Analytics</h4>
+              <ul class="m-list">
+                <li><i class="fa-solid fa-check text-success"></i> HTML5 Digital Signature Pad (Smooth Canvas)</li>
+                <li><i class="fa-solid fa-check text-success"></i> Photo Evidence Upload & Verification Workflow</li>
+                <li><i class="fa-solid fa-check text-success"></i> Tamper-proof POD Certificate Generator</li>
+                <li><i class="fa-solid fa-check text-success"></i> Multi-Role Chart.js Analytics Dashboards</li>
+              </ul>
+              <button class="btn-secondary-sm w-100 mt-2" onclick="app.switchTab('tab-pod')">
+                <i class="fa-solid fa-eye mr-1"></i> Test Milestone 3 Features
+              </button>
+            </div>
+
+            <!-- Milestone 4 -->
+            <div class="card milestone-card">
+              <div class="milestone-badge m4">Milestone 4 (Week 7 & 8)</div>
+              <h4 class="m-title">Reporting, Testing & Deployment</h4>
+              <ul class="m-list">
+                <li><i class="fa-solid fa-check text-success"></i> Filterable Operational Reports Engine</li>
+                <li><i class="fa-solid fa-check text-success"></i> 1-Click CSV / Excel Export & Printable PDF</li>
+                <li><i class="fa-solid fa-check text-success"></i> Multi-Channel Notification Dispatcher</li>
+                <li><i class="fa-solid fa-check text-success"></i> End-to-End Responsive Full-Stack Platform</li>
+              </ul>
+              <button class="btn-secondary-sm w-100 mt-2" onclick="app.switchTab('tab-reports')">
+                <i class="fa-solid fa-eye mr-1"></i> Test Milestone 4 Features
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Quick User Profile Modal -->
+    <div class="modal-overlay hidden" id="profileModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title"><i class="fa-solid fa-id-card-clip text-cyan"></i> User Profile & Access Control (RBAC)</div>
+          <button class="btn-modal-close" id="btnCloseProfileModal"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="profile-header-view">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" alt="Avatar" class="profile-modal-avatar" id="modalProfileAvatar" />
+            <div>
+              <h3 id="modalProfileName">Alex Morgan</h3>
+              <p class="text-cyan font-mono" id="modalProfileEmail">alex.morgan@infosys.com</p>
+              <span class="role-badge" id="modalProfileRole">Customer</span>
+            </div>
+          </div>
+          <div class="permissions-list mt-3">
+            <span class="perm-title">Assigned Permissions & Privileges:</span>
+            <div class="perm-chips" id="modalProfilePerms">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Leaflet JS for OpenStreetMap -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Chart.js for High-End Interactive Dashboards -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Canvas Confetti for Celebration Effects -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
